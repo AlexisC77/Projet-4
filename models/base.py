@@ -19,7 +19,9 @@ class Tournament:
     def __init__(self, date, round_number=4):
         self.date = date
         self.players = []
+        self.swiss_round = []
         self.round_number = round_number
+        self.current_swiss_round = SwissRound()
 
 
 class Match:
@@ -33,3 +35,4 @@ class Match:
 class SwissRound:
     def __init__(self):
         self.players = []
+        self.matches = []

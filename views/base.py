@@ -85,32 +85,36 @@ class View:
               "and you will not be able to go back to change results of this round")
         print()
 
-    def show_match_list(self, matches):
-        number = 1
-        for match in matches:
-            if match.winner is None:
-                print(str(number) + "    " + match.white_player + " vs " + match.black_player +
-                      "     result still undetermined")
-            else:
-                print(str(number) + "    " + match.white_player + " vs " + match.black_player
-                      + "     the winner is :" + match.winner)
-            number += 1
+    def show_match_list(self, swiss_round):
+        if not swiss_round.matches:
+            print("match list is empty")
+        else:
+            number = 1
+            for match in swiss_round.matches:
+                if match.winner is None:
+                    print(str(number) + "    " + match.white_player + " vs " + match.black_player +
+                          "     result still undetermined")
+                else:
+                    print(str(number) + "    " + match.white_player + " vs " + match.black_player +
+                          "     the winner is :" + match.winner)
+                number += 1
 
     def report_winner(self, matches):
         print("Enter the number of the match of which you want to report the result")
-        index = int(input())
-        if index < 1 or index >= len(matches):
+        index = input()
+        if not is_number(index) or int(index) < 1 or int(index) >= len(matches):
             print("number is not valid, It is write in the matches list please check and retry")
         else:
+            index = int(index)
             print("if \"" + matches[index].white_player + "\" won, enter 1, if \"" + matches[index].black_player +
                   "\" won, enter 2, if they made a draw enter 0, enter anything else to not update the result")
             result = input()
-            if result not in [0, 1, 2]:
+            if result not in ["0", "1", "2"]:
                 print("you didn't enter 0, 1 or 2 so the result as not being updated")
             else:
-                if result == 0:
+                if result == "0":
                     matches[index].winner = None
-                elif result == 1:
+                elif result == "1":
                     matches[index].winner = matches[index].white_player
                 else:
                     matches[index].winner = matches[index].black_player
@@ -120,12 +124,32 @@ class View:
             View.report_winner(self, matches)
         return matches
 
+    def display_tournament_end(self):
+        print("Enter 1 if you want to see the player List")
+        print("Enter 2 if you want to see a match list of a particular round")
+        print("Enter \"exit\" if you want to end this tournament, you will not be able to make any changes on It "
+              "or to watch information from It after that")
+
+    def ask_round_number(self, round_number):
+        print(round_number)
+        print("which round de you want to see?")
+        answer = input()
+        if not is_number(answer):
+            print("this is not a number, please retry")
+        elif int(answer) < 1 or int(answer) > round_number:
+            print("retry and choose a valid number please")
+        else:
+            return int(answer)-1
+        return None
+
 
 def is_number(string):
     test = True
     if string is None or string == "":
         test = False
-    else:
+    elif string[0] == "-":
+        string = string[1:]
+    if test:
         for i in string:
             if i not in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
                 test = False
