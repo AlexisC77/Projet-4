@@ -10,7 +10,11 @@ class Controllers:
         self.tournament = tournament
 
     def update_points(self):
-        pass
+        for player in self.tournament.players:
+            if not player.matches[-1].winner:
+                player.points += 0.5
+            elif player.has_same_name(player.matches[-1].winner):
+                player.points += 1
 
     def make_matches(self):
         if self.tournament.current_swiss_round_number == 1:
@@ -28,9 +32,12 @@ class Controllers:
                 player1 = not_choose_players_up.pop(0)
                 player2 = not_choose_players_down.pop(0)
                 self.tournament.current_swiss_round.matches.append(Match(player1, player2))
+                player1.matches.append(Match(player1, player2))
+                player2.matches.append(Match(player1, player2))
             if len(not_choose_players_down) == 1:
-                free_win = Player("free", "win", "00/00/0000", "male")
+                free_win = Player("free", "win", "00/00/0000", "other")
                 self.tournament.current_swiss_round.matches.append(not_choose_players_down[0], free_win)
+                self.tournament.current_swiss_round.matches[-1].winner = self.tournament.current_swiss_round.matches[-1][0][0]
                 self.tournament.current_swiss_round.matches[-1][1] = "victoire"
         else:
             pass
@@ -116,7 +123,7 @@ class Controllers:
                 while not next_round:
                     self.view.display_tournament_menu()
                     next_round = self.tournament_menu_controller()
-                # self.update_points()
+                self.update_points()
             while not program_end:
                 self.view.display_tournament_end()
                 program_end = self.tournament_end_controller()

@@ -122,9 +122,13 @@ class View:
                 if result == "0":
                     matches[index].winner = None
                 elif result == "1":
-                    matches[index].winner = matches[index].first_player[0].first_name+" " + matches[index].first_player[0].last_name
-                else:
-                    matches[index].winner = matches[index].second_player[0].first_name+" " + matches[index].second_player[0].last_name
+                    matches[index].winner = matches[index].first_player[0]
+                    matches[index].first_player[0].matches[-1].winner = matches[index].first_player[0]
+                    matches[index].second_player[0].matches[-1].winner = matches[index].first_player[0]
+                elif result == "2":
+                    matches[index].winner = matches[index].second_player[0]
+                    matches[index].second_player[0].matches[-1].winner = matches[index].second_player[0]
+                    matches[index].first_player[0].matches[-1].winner = matches[index].second_player[0]
         print("if you want to add another result enter \"y\" if not, enter anything else")
         restart = input()
         if restart == "y":
