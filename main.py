@@ -3,7 +3,8 @@ from models.base import Tournament
 
 
 def main():
-    tournament = Tournament(date="date", name="name",  place="place", description="description", time_control="time control")
+    tournament = Tournament(date="date", name="name",  place="place", description="description",
+                            time_control="time control")
     controller = Controllers(tournament)
     controller.run()
 
