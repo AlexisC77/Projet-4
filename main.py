@@ -1,10 +1,9 @@
 from controllers.base import Controllers
-from models.base import Tournament
+from views.base import create_tournament
 
 
 def main():
-    tournament = Tournament(date="date", name="name",  place="place", description="description",
-                            time_control="time control")
+    tournament = create_tournament()
     controller = Controllers(tournament)
     controller.run()
 

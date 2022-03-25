@@ -7,7 +7,6 @@ from models.base import deserialized_player
 from models.base import deserialized_match
 import time
 from tinydb import TinyDB
-# from tinydb import where
 
 
 class Controllers:
@@ -23,60 +22,60 @@ class Controllers:
             elif player.has_same_name(player.matches[-1].winner):
                 player.points += 1
 
-    def make_matches(self):
-        if self.tournament.current_swiss_round_number == 1:
-            self.tournament.sort_by_elo()
-            not_choose_players_up = []
-            not_choose_players_down = []
-            number = 1
-            for player in self.tournament.players:
-                if number <= len(self.tournament.players)/2:
-                    not_choose_players_up.append(player)
+    def make_matches_first_round(self):
+        self.tournament.sort_by_elo()
+        not_choose_players_up = []
+        not_choose_players_down = []
+        number = 1
+        for player in self.tournament.players:
+            if number <= len(self.tournament.players)/2:
+                not_choose_players_up.append(player)
+            else:
+                not_choose_players_down.append(player)
+            number += 1
+        while len(not_choose_players_up) + len(not_choose_players_down) > 1:
+            player1 = not_choose_players_up.pop(0)
+            player2 = not_choose_players_down.pop(0)
+            self.tournament.swiss_round[-1].matches.append(Match(player1, player2))
+            player1.matches.append(self.tournament.swiss_round[-1].matches[-1])
+            player2.matches.append(self.tournament.swiss_round[-1].matches[-1])
+            player1.player_encounter.append(player2)
+            player2.player_encounter.append(player1)
+        if len(not_choose_players_down) == 1:
+            free_win = Player("free", "win", "00/00/0000", "other")
+            self.tournament.swiss_round[-1].matches.append(not_choose_players_down[0], free_win)
+            self.tournament.swiss_round[-1].player_encounter.append(free_win)
+            self.tournament.swiss_round[-1].matches[-1].winner = self.tournament.swiss_round[-1].matches[-1][0][0]
+            self.tournament.swiss_round[-1].matches[-1][1] = "victoire"
+
+    def make_matches_other_round(self):
+        self.tournament.sort_by_points()
+        not_choose_players = []
+        for player in self.tournament.players:
+            not_choose_players.append(player)
+        while len(not_choose_players) > 1:
+            player1 = not_choose_players.pop(0)
+            test = False
+            index = 0
+            while not test:
+                if not_choose_players[index] not in player1.player_encounter:
+                    player2 = not_choose_players.pop(index)
+                    self.tournament.swiss_round[-1].matches.append(Match(player1, player2))
+                    player1.matches.append(self.tournament.swiss_round[-1].matches[-1])
+                    player2.matches.append(self.tournament.swiss_round[-1].matches[-1])
+                    player1.player_encounter.append(player2)
+                    player2.player_encounter.append(player1)
+                    test = True
+                elif index < len(not_choose_players)-1:
+                    index += 1
                 else:
-                    not_choose_players_down.append(player)
-                number += 1
-            while len(not_choose_players_up) + len(not_choose_players_down) > 1:
-                player1 = not_choose_players_up.pop(0)
-                player2 = not_choose_players_down.pop(0)
-                self.tournament.swiss_round[-1].matches.append(Match(player1, player2))
-                player1.matches.append(self.tournament.swiss_round[-1].matches[-1])
-                player2.matches.append(self.tournament.swiss_round[-1].matches[-1])
-                player1.player_encounter.append(player2)
-                player2.player_encounter.append(player1)
-            if len(not_choose_players_down) == 1:
-                free_win = Player("free", "win", "00/00/0000", "other")
-                self.tournament.swiss_round[-1].matches.append(not_choose_players_down[0], free_win)
-                self.tournament.swiss_round[-1].player_encounter.append(free_win)
-                self.tournament.swiss_round[-1].matches[-1].winner = self.tournament.swiss_round[-1].matches[-1][0][0]
-                self.tournament.swiss_round[-1].matches[-1][1] = "victoire"
-        else:
-            self.tournament.sort_by_points()
-            not_choose_players = []
-            for player in self.tournament.players:
-                not_choose_players.append(player)
-            while len(not_choose_players) > 1:
-                player1 = not_choose_players.pop(0)
-                test = False
-                index = 0
-                while not test:
-                    if not_choose_players[index] not in player1.player_encounter:
-                        player2 = not_choose_players.pop(index)
-                        self.tournament.swiss_round[-1].matches.append(Match(player1, player2))
-                        player1.matches.append(self.tournament.swiss_round[-1].matches[-1])
-                        player2.matches.append(self.tournament.swiss_round[-1].matches[-1])
-                        player1.player_encounter.append(player2)
-                        player2.player_encounter.append(player1)
-                        test = True
-                    elif index < len(not_choose_players)-1:
-                        index += 1
-                    else:
-                        player2 = not_choose_players.pop(0)
-                        self.tournament.swiss_round[-1].matches.append(Match(player1, player2))
-                        player1.matches.append(self.tournament.swiss_round[-1].matches[-1])
-                        player2.matches.append(self.tournament.swiss_round[-1].matches[-1])
-                        player1.player_encounter.append(player2)
-                        player2.player_encounter.append(player1)
-                        test = True
+                    player2 = not_choose_players.pop(0)
+                    self.tournament.swiss_round[-1].matches.append(Match(player1, player2))
+                    player1.matches.append(self.tournament.swiss_round[-1].matches[-1])
+                    player2.matches.append(self.tournament.swiss_round[-1].matches[-1])
+                    player1.player_encounter.append(player2)
+                    player2.player_encounter.append(player1)
+                    test = True
 
     def start_tournament(self):
         self.update_database()
@@ -227,8 +226,9 @@ class Controllers:
     def next_round(self):
         self.tournament.swiss_round[-1].ending_hour = time.strftime('%H:%M', time.localtime())
         self.update_points()
-        self.tournament.current_swiss_round_number += 1
-        self.tournament.swiss_round.append(SwissRound(self.tournament.current_swiss_round_number))
+        if self.tournament.current_swiss_round_number < self.tournament.round_number:
+            self.tournament.current_swiss_round_number += 1
+            self.tournament.swiss_round.append(SwissRound(self.tournament.current_swiss_round_number))
 
     def tournament_end_controller(self, saved_boolean):
         program_end = False
@@ -262,7 +262,12 @@ class Controllers:
                 starting_menu = self.starting_menu_controller()
             for rounds in range(self.tournament.current_swiss_round_number, int(self.tournament.round_number)+1):
                 next_round = False
-                self.make_matches()
+                if self.tournament.current_swiss_round_number == 1:
+                    self.tournament.swiss_round[-1].starting_hour = time.strftime('%H:%M', time.localtime())
+                    self.make_matches_first_round()
+                else:
+                    self.tournament.swiss_round[-1].starting_hour = time.strftime('%H:%M', time.localtime())
+                    self.make_matches_other_round()
                 while not next_round:
                     self.view.display_tournament_menu()
                     next_round = self.tournament_menu_controller()

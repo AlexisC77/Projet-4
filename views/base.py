@@ -1,4 +1,5 @@
 from models.base import Player
+from models.base import Tournament
 
 
 class View:
@@ -179,7 +180,7 @@ class View:
               "or to watch information from It after that")
 
     def ask_round_number(self, round_number):
-        print(round_number)
+        print("they are:" + round_number + " rounds in this tournament, which one do you want to see?")
         print("which round de you want to see?")
         answer = input()
         if not is_number(answer):
@@ -224,3 +225,17 @@ def is_number(string):
             if i not in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
                 test = False
     return test
+
+
+def create_tournament():
+    print("how do you want to name this tournament?")
+    name = input()
+    print("where is this tournament being play")
+    place = input()
+    print("which description do you want for this tournament")
+    description = input()
+    print("what kind of time control they are on this tournament? (blitz, classic...)")
+    time_control = input()
+    tournament = Tournament(name=name,  place=place, description=description,
+                            time_control=time_control)
+    return tournament
