@@ -59,8 +59,8 @@ def deserialized_player(serialized_player):
 
 
 class Tournament:
-    def __init__(self, name, place, description, time_control, round_number=4, date=time.strftime('%d/%m/%Y'), players=None,
-                 swiss_round=None, current_swiss_round_number=1):
+    def __init__(self, name, place, description, time_control, round_number=4, date=time.strftime('%d/%m/%Y'),
+                 players=None, swiss_round=None, current_swiss_round_number=1):
         if swiss_round is None:
             swiss_round = []
         if players is None:
