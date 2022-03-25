@@ -5,4 +5,4 @@ Tout d'abord, assurer vous que python est installé sur votre appareil dans une 
 vous pouvez maintenant éxécuter le programme en tapant "python chess_tournament.py" ou en allez l'éxécuter manuellement directement dans python ou dans votre IDE, ce programme créera des dossiers pour chacunes des catégories du site contenant les images des livres et un fichier .csv contenant les information.
 
 
-Afin de créer un rapport flake8 avec pour paramètre max-line-length=119, installez d'abord flake8 en tapant "pip install flake8" puis placez vous dans le dossier contenant le projet et rentrez: "flake8 --max-line-length=119" dans vootre terminal
+Afin de créer un rapport flake8 avec pour paramètre max-line-length=119, installez d'abord flake8 en tapant "pip install flake8-html" puis placez vous dans le dossier contenant le projet et rentrez: "flake8 --format=html --max-line-length=119 --htmldir=flake-report" dans votre terminal
