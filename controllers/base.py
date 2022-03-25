@@ -90,11 +90,7 @@ class Controllers:
                 if player.first_name+player.last_name == player_from_table["first name"] + \
                         player_from_table["last name"]:
                     already_in_base = True
-            if already_in_base:
-                pass
-                # TinyDB("player.json").table('player_list').update({'elo': player.elo})
-                # , where('first name' == player.first_name))
-            else:
+            if not already_in_base:
                 TinyDB("player.json").table('player_list').insert(player.serialized())
 
     def update_tournament(self):
