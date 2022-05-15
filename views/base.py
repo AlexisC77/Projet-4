@@ -180,7 +180,7 @@ class View:
               "or to watch information from It after that")
 
     def ask_round_number(self, round_number):
-        print("they are:" + round_number + " rounds in this tournament, which one do you want to see?")
+        print("they are:" + str(round_number) + " rounds in this tournament, which one do you want to see?")
         print("which round de you want to see?")
         answer = input()
         if not is_number(answer):
